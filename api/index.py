@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes.blog import router as blog_router
+from api.routes.projects import router as project_router
 from api.database import db
 
 app = FastAPI()
@@ -14,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(blog_router)
+app.include_router(project_router)
 
 @app.on_event("startup")
 async def startup_db_client():
