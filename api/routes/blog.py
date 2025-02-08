@@ -11,8 +11,8 @@ async def get_blogs():
     blogs = []
     async for blog in db.blogs.find():
         blog['_id'] = str(blog['_id'])
-        blogs.append(blog)  
-    return blogs    
+        blogs.append(blog)
+    return blogs
 
 @router.post("/", response_model=Blog)
 async def add_blog(blog: Blog):
@@ -45,3 +45,7 @@ async def delete_blog(blog_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Blog not found")
     return {"message": "Blog deleted successfully"}
+
+@router.get("/frontend-url", response_model=dict)
+async def get_frontend_url():
+    return {"url": "https://byteupp.vercel.app/"}
