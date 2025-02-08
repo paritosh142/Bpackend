@@ -15,14 +15,6 @@ app.add_middleware(
 
 app.include_router(blog_router)
 
-@app.on_event("startup")
-async def startup_db_client():
-    await db.command("ping")
-    print("Connected to MongoDB!")
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    db.client.close()
 
 @app.get("/")
 async def health_check():
