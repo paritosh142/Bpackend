@@ -7,7 +7,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://byteupp.vercel.app"],  # Allow only the frontend URL
+    allow_origins=["*"],  # Adjust this in production!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
