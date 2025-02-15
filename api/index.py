@@ -2,9 +2,9 @@ from fastapi import FastAPI , BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes.blog import router as blog_router
 from api.routes.projects import router as project_router
-from api.database import db
+from api.database import db,initialize_counters
 import asyncio
-import httpx
+import httpx 
 
 app = FastAPI()
 
@@ -36,6 +36,8 @@ async def keep_alive():
 @app.on_event("startup")
 async def start_keep_alive():
     asyncio.create_task(keep_alive())
+    await initialize_counters(app)  # Pass the app argument
+
 @app.get("/")
 async def health_check():
     return {"status": "OK"}

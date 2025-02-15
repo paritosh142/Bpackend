@@ -2,14 +2,24 @@ from pydantic import BaseModel, Field
 from typing import List, Optional , Literal
 from datetime import datetime
 
-class Blog(BaseModel):
+class BlogBase(BaseModel):
     title: str
     description: str
     tags: List[str]
-    created_at: datetime
-    updated_at: Optional[datetime]
-    cover_images: List[Optional[str]] = [None, None, None]
     content: str
+    cover_images: List[Optional[str]] = Field(
+        [None, None, None], 
+        max_items=3,
+        description="Max 3 cover images"
+    )
+
+class BlogCreate(BlogBase):
+    pass
+
+class Blog(BlogBase):
+    blog_id: int = Field(..., ge=1, le=50)  
+    created_at: datetime
+    updated_at: Optional[datetime] = None
     views: int = 0
 
 class ProjectLinks(BaseModel):
