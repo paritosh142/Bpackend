@@ -4,6 +4,7 @@ from api.models import ProjectBase as Project
 from datetime import datetime
 from bson import ObjectId
 from typing import List
+import random
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -21,6 +22,19 @@ async def add_project(project: Project):
     project_data['created_at'] = datetime.utcnow()
     await db.projects.insert_one(project_data)
     return {**project_data, "_id": str(project_data['_id'])}
+
+@router.get("/random", response_model=List[dict])
+async def get_random_projects(limit: int = Query(1, ge=1)):
+    projects = []
+    async for project in db.projects.find():
+        project['_id'] = str(project['_id'])
+        projects.append(project)
+    
+    if len(projects) < limit:
+        raise HTTPException(status_code=400, detail="Not enough projects available")
+    
+    random_projects = random.sample(projects, limit)
+    return random_projects
 
 @router.get("/{project_id}", response_model=dict)
 async def get_project(project_id: str):

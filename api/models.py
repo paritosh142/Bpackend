@@ -34,5 +34,5 @@ class ProjectBase(BaseModel):
     description: str
     tech_stack: list[str] = Field(..., min_items=1)
     metrics: dict[str, str]
-    images: list[str] = Field(..., max_items=3)
+    images: str  # Allow only one image
     links: Optional[ProjectLinks] = None
