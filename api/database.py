@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from datetime import datetime
+import logging
 
 load_dotenv()
 
@@ -16,10 +17,14 @@ client = AsyncIOMotorClient(mongo_uri)
 db = client[db_name]
 
 async def initialize_counters(app: FastAPI):
-    # Create blog_id counter if not exists
-    if await db.counters.find_one({"_id": "blog_id"}) is None:
+    logging.info("Initializing counters...")
+    counter = await db.counters.find_one({"_id": "blog_id"})
+    if not counter:
+        logging.info("Counter document not found. Creating a new one.")
         await db.counters.insert_one({
             "_id": "blog_id",
             "seq": 0,
             "created_at": datetime.utcnow()
         })
+    else:
+        logging.info("Counter document already exists.")
