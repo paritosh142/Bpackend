@@ -1,15 +1,24 @@
 import logging
-from fastapi import FastAPI , BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from api.routes.blog import router as blog_router
 from api.routes.projects import router as project_router
 from api.database import db, initialize_counters
+from api.email_utils import send_email
 import asyncio
 import httpx 
+from dotenv import load_dotenv
+import os 
+
 
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
+
+load_dotenv()
+
+SMTP_USERNAME = os.getenv("SMTP_USERNAME")
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +34,16 @@ app.include_router(project_router)
 @app.get("/ping")
 async def ping():
     return {"status": "alive"}
+
+@app.post("/send-email")
+async def send_email_endpoint(
+    background_tasks: BackgroundTasks,
+    subject: str = Form(...),
+    body: str = Form(...)
+):
+    recipient = SMTP_USERNAME  
+    background_tasks.add_task(send_email, recipient, subject, body)
+    return JSONResponse(status_code=200, content={"message": "Email sending initiated"})
 
 async def keep_alive():
     async with httpx.AsyncClient() as client:
